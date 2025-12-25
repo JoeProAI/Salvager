@@ -105,60 +105,52 @@ export default function Home() {
         {/* Diagonal hazard stripe */}
         <div className="absolute top-24 left-0 right-0 h-8 hazard-stripe opacity-30" />
         
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left - Text */}
-            <div className="relative">
-              <div className="inline-flex items-center gap-2 px-4 py-2 border border-acid-500/30 bg-acid-500/5 mb-8 animate-slide-up opacity-0 stagger-1">
-                <Radiation className="w-4 h-4 text-acid-500 animate-pulse" />
-                <span className="text-xs text-acid-400 uppercase tracking-[0.2em] font-mono">System Online</span>
-              </div>
-              
-              <h1 className={`font-display text-6xl lg:text-8xl leading-[0.85] mb-8 animate-slide-up opacity-0 stagger-2 ${glitchText ? 'animate-glitch' : ''}`}>
-                <span className="text-slab-100 block">GATHER</span>
-                <span className="text-slab-100 block">DATA.</span>
-                <span className="text-acid-500 neon-text block">SUPPLY</span>
-                <span className="text-acid-500 neon-text block">POWER.</span>
-              </h1>
-              
-              <p className="text-lg text-slab-400 mb-10 max-w-lg font-mono leading-relaxed animate-slide-up opacity-0 stagger-3">
-                <span className="text-acid-600">&gt;</span> Connect to vast data deposits across the web. 
-                Extract. Process. Deliver. Your applications need fuel. 
-                <span className="text-acid-400"> We supply it.</span>
-              </p>
+        <div className="max-w-5xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 border border-acid-500/30 bg-acid-500/5 mb-8 animate-slide-up opacity-0 stagger-1">
+            <Radiation className="w-4 h-4 text-acid-500 animate-pulse" />
+            <span className="text-xs text-acid-400 uppercase tracking-[0.2em] font-mono">System Online</span>
+          </div>
+          
+          <h1 className={`font-display text-6xl lg:text-8xl leading-[0.85] mb-8 animate-slide-up opacity-0 stagger-2 ${glitchText ? 'animate-glitch' : ''}`}>
+            <span className="text-slab-100 block">GATHER DATA.</span>
+            <span className="text-acid-500 neon-text block">SUPPLY POWER.</span>
+          </h1>
+          
+          <p className="text-lg text-slab-400 mb-10 max-w-2xl mx-auto font-mono leading-relaxed animate-slide-up opacity-0 stagger-3">
+            <span className="text-acid-600">&gt;</span> Deploy autonomous agent crews to extract data from across the web. 
+            Phantom scouts. Byte processes. Daemon delivers.
+            <span className="text-acid-400"> Your ops, automated.</span>
+          </p>
 
-              <div className="flex items-center gap-4 animate-slide-up opacity-0 stagger-4">
-                <Link href="/auth/signup" className="salvage-btn inline-flex items-center gap-3">
-                  START EXTRACTION
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-                <Link href="/resources" className="salvage-btn-secondary inline-flex items-center gap-3">
-                  BROWSE RESOURCES
-                </Link>
-              </div>
-            </div>
+          <div className="flex items-center justify-center gap-4 mb-16 animate-slide-up opacity-0 stagger-4">
+            <Link href="/auth/signup" className="salvage-btn inline-flex items-center gap-3">
+              START EXTRACTION
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link href="/resources" className="salvage-btn-secondary inline-flex items-center gap-3">
+              MEET THE CREW
+            </Link>
+          </div>
 
-            {/* Right - Stats Grid */}
-            <div className="grid grid-cols-2 gap-4 animate-fade-in opacity-0 stagger-5">
-              {stats.map((stat, i) => {
-                const Icon = stat.icon
-                return (
-                  <div 
-                    key={stat.label} 
-                    className="salvage-card p-6 group hover:scale-105 transition-transform duration-200"
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <Icon className="w-5 h-5 text-acid-500/50 group-hover:text-acid-400 transition-colors" />
-                      <span className="text-[10px] text-slab-600 font-mono">{String(i + 1).padStart(2, '0')}</span>
-                    </div>
-                    <div className="font-display text-4xl text-acid-400 mb-1 neon-text">
-                      {stat.value}
-                    </div>
-                    <div className="text-[10px] text-slab-500 uppercase tracking-[0.15em] font-mono">{stat.label}</div>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in opacity-0 stagger-5">
+            {stats.map((stat, i) => {
+              const Icon = stat.icon
+              return (
+                <div 
+                  key={stat.label} 
+                  className="salvage-card p-6 group hover:scale-105 transition-transform duration-200"
+                >
+                  <div className="flex items-center justify-center mb-3">
+                    <Icon className="w-5 h-5 text-acid-500/50 group-hover:text-acid-400 transition-colors" />
                   </div>
-                )
-              })}
-            </div>
+                  <div className="font-display text-3xl text-acid-400 mb-1 neon-text">
+                    {stat.value}
+                  </div>
+                  <div className="text-[10px] text-slab-500 uppercase tracking-[0.15em] font-mono">{stat.label}</div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
