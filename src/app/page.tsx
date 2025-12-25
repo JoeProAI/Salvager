@@ -60,10 +60,10 @@ export default function Home() {
   ]
 
   const stats = [
-    { label: 'RESOURCE TYPES', value: '8K+', icon: Container },
-    { label: 'DAILY EXTRACTS', value: '10M+', icon: Zap },
-    { label: 'UPTIME', value: '99.9%', icon: Radio },
-    { label: 'RESPONSE', value: '<2s', icon: Cpu },
+    { label: 'RESOURCE TYPES', value: '1,500+', icon: Container },
+    { label: 'API CALLS', value: 'LIVE', icon: Zap },
+    { label: 'STATUS', value: 'ONLINE', icon: Radio },
+    { label: 'LATENCY', value: 'REAL-TIME', icon: Cpu },
   ]
 
   return (
