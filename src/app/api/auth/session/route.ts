@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { adminAuth } from '@/lib/firebase-admin'
+import { getAdminAuth } from '@/lib/firebase-admin'
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,6 +9,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { authenticated: false },
         { status: 401 }
+      )
+    }
+
+    const adminAuth = getAdminAuth()
+    if (!adminAuth) {
+      return NextResponse.json(
+        { authenticated: false, error: 'Auth not configured' },
+        { status: 503 }
       )
     }
 

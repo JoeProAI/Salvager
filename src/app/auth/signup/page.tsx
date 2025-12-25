@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Database, Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react'
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
-import { auth } from '@/lib/firebase'
+import { getFirebaseAuth } from '@/lib/firebase'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -33,6 +33,12 @@ export default function SignupPage() {
     setIsLoading(true)
 
     try {
+      const auth = getFirebaseAuth()
+      if (!auth) {
+        setError('Authentication not configured')
+        setIsLoading(false)
+        return
+      }
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       
       // Update profile with name

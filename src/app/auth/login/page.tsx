@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Database, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '@/lib/firebase'
+import { getFirebaseAuth } from '@/lib/firebase'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -20,6 +20,12 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
+      const auth = getFirebaseAuth()
+      if (!auth) {
+        setError('Authentication not configured')
+        setIsLoading(false)
+        return
+      }
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       const idToken = await userCredential.user.getIdToken()
 
