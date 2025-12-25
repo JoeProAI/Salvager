@@ -17,7 +17,10 @@ import {
   MessageSquare,
   Image,
   Video,
-  FileText
+  FileText,
+  Skull,
+  Crosshair,
+  Terminal
 } from 'lucide-react'
 
 interface ResourceType {
@@ -82,51 +85,61 @@ export default function ResourcesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-steel-950 grid-pattern">
+    <div className="min-h-screen bg-slab-950">
+      {/* Scan line effect */}
+      <div className="scan-line" />
+      
       {/* Header */}
-      <header className="bg-steel-900/80 backdrop-blur-sm border-b border-steel-800 sticky top-0 z-40">
+      <header className="bg-slab-900/95 backdrop-blur-sm border-b-2 border-slab-800 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-salvage-500 to-salvage-700 flex items-center justify-center">
-                  <Database className="w-5 h-5 text-white" />
+              <Link href="/" className="flex items-center gap-3">
+                <div className="w-10 h-10 border-2 border-acid-500 flex items-center justify-center">
+                  <Skull className="w-5 h-5 text-acid-500" />
                 </div>
-                <span className="font-display text-xl font-bold text-white">Salvager</span>
+                <span className="font-display text-xl text-acid-500 tracking-wider">SALVAGE OPS</span>
               </Link>
-              <span className="text-steel-600">/</span>
-              <h1 className="font-display text-lg font-semibold text-white">Discover Resources</h1>
+              <span className="text-slab-600 font-mono">/</span>
+              <h1 className="font-display text-lg text-slab-100 uppercase tracking-wide">Discover</h1>
             </div>
+            <Link href="/dashboard" className="text-slab-400 hover:text-acid-400 transition-colors text-sm uppercase tracking-wider font-mono">
+              Dashboard
+            </Link>
           </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Search Section */}
-        <div className="salvage-card p-6 mb-8">
+        <div className="salvage-card p-8 mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <Crosshair className="w-5 h-5 text-acid-500" />
+            <span className="font-mono text-acid-400 text-sm uppercase tracking-wider">Target Acquisition</span>
+          </div>
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-steel-500" />
+              <Terminal className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slab-500" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                className="salvage-input pl-12"
-                placeholder="Search for resource types (e.g., 'Instagram posts', 'Google Maps', 'product reviews')"
+                className="w-full bg-slab-900 border-2 border-slab-700 text-slab-100 px-12 py-4 font-mono focus:border-acid-500 focus:outline-none transition-colors placeholder:text-slab-600"
+                placeholder="> Search targets (e.g., 'Instagram posts', 'Google Maps', 'product data')"
               />
             </div>
             <button
               onClick={handleSearch}
               disabled={isLoading || !searchQuery.trim()}
-              className="salvage-btn inline-flex items-center gap-2 px-6"
+              className="salvage-btn inline-flex items-center gap-2 px-8"
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <Search className="w-5 h-5" />
               )}
-              Search
+              SCAN
             </button>
           </div>
         </div>
@@ -139,10 +152,10 @@ export default function ResourcesPage() {
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2 whitespace-nowrap transition-colors font-mono text-sm uppercase tracking-wider ${
                   selectedCategory === cat.id
-                    ? 'bg-salvage-500/10 text-salvage-400 border border-salvage-500/20'
-                    : 'bg-steel-800/50 text-steel-400 hover:bg-steel-800 hover:text-white'
+                    ? 'bg-acid-500/10 text-acid-400 border-2 border-acid-500/30'
+                    : 'bg-slab-800/50 text-slab-400 border-2 border-slab-700 hover:border-slab-600 hover:text-slab-200'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -154,19 +167,19 @@ export default function ResourcesPage() {
 
         {/* View Toggle */}
         <div className="flex items-center justify-between mb-6">
-          <p className="text-steel-400">
-            {hasSearched ? `${resources.length} resources found` : 'Search to discover available resources'}
+          <p className="text-slab-400 font-mono text-sm">
+            {hasSearched ? `> ${resources.length} targets acquired` : '> Awaiting scan parameters...'}
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-steel-700 text-white' : 'text-steel-500 hover:text-white'}`}
+              className={`p-2 border-2 ${viewMode === 'grid' ? 'border-acid-500 text-acid-400' : 'border-slab-700 text-slab-500 hover:text-slab-300'}`}
             >
               <Grid className="w-5 h-5" />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-steel-700 text-white' : 'text-steel-500 hover:text-white'}`}
+              className={`p-2 border-2 ${viewMode === 'list' ? 'border-acid-500 text-acid-400' : 'border-slab-700 text-slab-500 hover:text-slab-300'}`}
             >
               <List className="w-5 h-5" />
             </button>
@@ -175,8 +188,9 @@ export default function ResourcesPage() {
 
         {/* Results */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-salvage-400 animate-spin" />
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 text-acid-400 animate-spin mb-4" />
+            <p className="font-mono text-acid-400 text-sm animate-pulse">SCANNING TARGETS...</p>
           </div>
         ) : resources.length > 0 ? (
           <div className={viewMode === 'grid' ? 'grid md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
@@ -186,20 +200,20 @@ export default function ResourcesPage() {
                 <Link
                   key={resource.id}
                   href={`/gather/new?resource=${resource.id}`}
-                  className="salvage-card p-6 hover:border-salvage-500/30 transition-all group"
+                  className="salvage-card p-6 hover:border-acid-500/50 transition-all group"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-salvage-500/10 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-6 h-6 text-salvage-400" />
+                    <div className="w-12 h-12 border-2 border-slab-600 group-hover:border-acid-500 flex items-center justify-center flex-shrink-0 transition-colors">
+                      <Icon className="w-6 h-6 text-slab-400 group-hover:text-acid-400 transition-colors" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-white group-hover:text-salvage-400 transition-colors truncate">
+                      <h3 className="font-display text-slab-100 group-hover:text-acid-400 transition-colors truncate uppercase tracking-wide">
                         {resource.name}
                       </h3>
-                      <p className="text-sm text-steel-500 mt-1 line-clamp-2">
+                      <p className="text-sm text-slab-500 mt-1 line-clamp-2 font-mono">
                         {resource.description}
                       </p>
-                      <span className="inline-block mt-3 text-xs px-2 py-1 rounded-full bg-steel-800 text-steel-400">
+                      <span className="inline-block mt-3 text-xs px-2 py-1 bg-slab-800 text-slab-400 font-mono uppercase">
                         {resource.category}
                       </span>
                     </div>
@@ -209,40 +223,40 @@ export default function ResourcesPage() {
                 <Link
                   key={resource.id}
                   href={`/gather/new?resource=${resource.id}`}
-                  className="salvage-card p-4 flex items-center gap-4 hover:border-salvage-500/30 transition-all group"
+                  className="salvage-card p-4 flex items-center gap-4 hover:border-acid-500/50 transition-all group"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-salvage-500/10 flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-5 h-5 text-salvage-400" />
+                  <div className="w-10 h-10 border-2 border-slab-600 group-hover:border-acid-500 flex items-center justify-center flex-shrink-0 transition-colors">
+                    <Icon className="w-5 h-5 text-slab-400 group-hover:text-acid-400 transition-colors" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-white group-hover:text-salvage-400 transition-colors">
+                    <h3 className="font-display text-slab-100 group-hover:text-acid-400 transition-colors uppercase tracking-wide">
                       {resource.name}
                     </h3>
-                    <p className="text-sm text-steel-500 truncate">
+                    <p className="text-sm text-slab-500 truncate font-mono">
                       {resource.description}
                     </p>
                   </div>
-                  <span className="text-xs px-2 py-1 rounded-full bg-steel-800 text-steel-400">
+                  <span className="text-xs px-2 py-1 bg-slab-800 text-slab-400 font-mono uppercase">
                     {resource.category}
                   </span>
-                  <ChevronRight className="w-5 h-5 text-steel-600 group-hover:text-salvage-400" />
+                  <ChevronRight className="w-5 h-5 text-slab-600 group-hover:text-acid-400 transition-colors" />
                 </Link>
               )
             })}
           </div>
         ) : hasSearched ? (
           <div className="text-center py-20">
-            <Package className="w-16 h-16 text-steel-600 mx-auto mb-4" />
-            <h3 className="font-display text-xl font-semibold text-white mb-2">No resources found</h3>
-            <p className="text-steel-500">Try a different search term or browse categories</p>
+            <Package className="w-16 h-16 text-slab-600 mx-auto mb-4" />
+            <h3 className="font-display text-xl text-slab-100 mb-2 uppercase tracking-wide">No Targets Found</h3>
+            <p className="text-slab-500 font-mono">Adjust scan parameters and retry</p>
           </div>
         ) : (
           <div className="text-center py-20">
-            <Search className="w-16 h-16 text-steel-600 mx-auto mb-4" />
-            <h3 className="font-display text-xl font-semibold text-white mb-2">Discover Resources</h3>
-            <p className="text-steel-500 max-w-md mx-auto">
-              Search for data sources across social media, e-commerce, search engines, maps, and more.
-              Over 8,000 resource types available.
+            <Crosshair className="w-16 h-16 text-slab-600 mx-auto mb-4" />
+            <h3 className="font-display text-xl text-slab-100 mb-2 uppercase tracking-wide">Target Acquisition</h3>
+            <p className="text-slab-500 max-w-md mx-auto font-mono">
+              Scan for data sources across social media, e-commerce, search engines, maps, and more.
+              1,500+ resource types available.
             </p>
           </div>
         )}

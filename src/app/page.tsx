@@ -127,9 +127,9 @@ export default function Home() {
               START EXTRACTION
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link href="/resources" className="salvage-btn-secondary inline-flex items-center gap-3">
+            <a href="#crew" className="salvage-btn-secondary inline-flex items-center gap-3">
               MEET THE CREW
-            </Link>
+            </a>
           </div>
 
           {/* Stats Grid */}
@@ -155,8 +155,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24 px-6 relative">
+      {/* The Crew Section */}
+      <section id="crew" className="py-24 px-6 relative scroll-mt-20">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slab-900/50 to-transparent" />
         
         <div className="max-w-7xl mx-auto relative">

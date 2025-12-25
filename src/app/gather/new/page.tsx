@@ -9,7 +9,11 @@ import {
   Play,
   Loader2,
   Settings,
-  Info
+  Info,
+  Skull,
+  Crosshair,
+  Terminal,
+  Zap
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 
@@ -133,21 +137,24 @@ function GatherForm() {
   }
 
   return (
-    <div className="min-h-screen bg-steel-950 grid-pattern">
+    <div className="min-h-screen bg-slab-950">
+      {/* Scan line effect */}
+      <div className="scan-line" />
+      
       {/* Header */}
-      <header className="bg-steel-900/80 backdrop-blur-sm border-b border-steel-800 sticky top-0 z-40">
+      <header className="bg-slab-900/95 backdrop-blur-sm border-b-2 border-slab-800 sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
-            <Link href="/resources" className="p-2 rounded-lg hover:bg-steel-800 text-steel-400 hover:text-white transition-colors">
+            <Link href="/resources" className="p-2 border-2 border-slab-700 hover:border-acid-500 text-slab-400 hover:text-acid-400 transition-colors">
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-salvage-500 to-salvage-700 flex items-center justify-center">
-                <Database className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 border-2 border-acid-500 flex items-center justify-center">
+                <Skull className="w-5 h-5 text-acid-500" />
               </div>
               <div>
-                <h1 className="font-display text-lg font-semibold text-white">New Gathering Task</h1>
-                <p className="text-sm text-steel-500">Configure and start resource gathering</p>
+                <h1 className="font-display text-lg text-slab-100 uppercase tracking-wide">New Extraction</h1>
+                <p className="text-sm text-slab-500 font-mono">&gt; Configure operation parameters</p>
               </div>
             </div>
           </div>
@@ -157,38 +164,38 @@ function GatherForm() {
       <main className="max-w-4xl mx-auto px-6 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400">
-              {error}
+            <div className="p-4 border-2 border-oxide-500/50 bg-oxide-500/10 text-oxide-400 font-mono text-sm">
+              <span className="text-oxide-500">[ERROR]</span> {error}
             </div>
           )}
 
           {/* Job Name */}
           <div className="salvage-card p-6">
-            <h2 className="font-display text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <Settings className="w-5 h-5 text-salvage-400" />
-              Task Configuration
+            <h2 className="font-display text-lg text-slab-100 mb-4 flex items-center gap-2 uppercase tracking-wide">
+              <Terminal className="w-5 h-5 text-acid-400" />
+              Operation Config
             </h2>
             
             <div className="space-y-4">
               <div>
-                <label className="salvage-label">Task Name</label>
+                <label className="block text-xs text-slab-500 font-mono uppercase tracking-wider mb-2">Operation Name</label>
                 <input
                   type="text"
                   value={jobName}
                   onChange={(e) => setJobName(e.target.value)}
-                  className="salvage-input"
-                  placeholder="Enter a name for this task"
+                  className="w-full bg-slab-900 border-2 border-slab-700 text-slab-100 px-4 py-3 font-mono focus:border-acid-500 focus:outline-none transition-colors placeholder:text-slab-600"
+                  placeholder="> Enter operation identifier"
                   required
                 />
               </div>
 
               {resourceDetails && (
-                <div className="p-4 rounded-lg bg-steel-800/50 border border-steel-700">
+                <div className="p-4 border-2 border-slab-700 bg-slab-800/50">
                   <div className="flex items-start gap-3">
-                    <Info className="w-5 h-5 text-salvage-400 flex-shrink-0 mt-0.5" />
+                    <Crosshair className="w-5 h-5 text-acid-400 flex-shrink-0 mt-0.5" />
                     <div>
-                      <h3 className="font-medium text-white">{resourceDetails.name}</h3>
-                      <p className="text-sm text-steel-400 mt-1">{resourceDetails.description}</p>
+                      <h3 className="font-display text-slab-100 uppercase tracking-wide">{resourceDetails.name}</h3>
+                      <p className="text-sm text-slab-400 mt-1 font-mono">{resourceDetails.description}</p>
                     </div>
                   </div>
                 </div>
@@ -199,8 +206,9 @@ function GatherForm() {
           {/* Input Parameters */}
           {resourceDetails?.inputSchema && (
             <div className="salvage-card p-6">
-              <h2 className="font-display text-lg font-semibold text-white mb-4">
-                Input Parameters
+              <h2 className="font-display text-lg text-slab-100 mb-4 flex items-center gap-2 uppercase tracking-wide">
+                <Settings className="w-5 h-5 text-acid-400" />
+                Parameters
               </h2>
               
               <div className="space-y-4">
@@ -225,28 +233,29 @@ function GatherForm() {
           {/* Quick Input for simple cases */}
           {!resourceDetails?.inputSchema && (
             <div className="salvage-card p-6">
-              <h2 className="font-display text-lg font-semibold text-white mb-4">
-                Input Parameters
+              <h2 className="font-display text-lg text-slab-100 mb-4 flex items-center gap-2 uppercase tracking-wide">
+                <Crosshair className="w-5 h-5 text-acid-400" />
+                Target Parameters
               </h2>
               
               <div className="space-y-4">
                 <div>
-                  <label className="salvage-label">Query / Search Term</label>
+                  <label className="block text-xs text-slab-500 font-mono uppercase tracking-wider mb-2">Query / Target URL</label>
                   <input
                     type="text"
                     value={formData.query || ''}
                     onChange={(e) => setFormData({ ...formData, query: e.target.value })}
-                    className="salvage-input"
-                    placeholder="Enter search query or URL"
+                    className="w-full bg-slab-900 border-2 border-slab-700 text-slab-100 px-4 py-3 font-mono focus:border-acid-500 focus:outline-none transition-colors placeholder:text-slab-600"
+                    placeholder="> Enter target query or URL"
                   />
                 </div>
                 <div>
-                  <label className="salvage-label">Maximum Results</label>
+                  <label className="block text-xs text-slab-500 font-mono uppercase tracking-wider mb-2">Max Results</label>
                   <input
                     type="number"
                     value={formData.maxResults || 100}
                     onChange={(e) => setFormData({ ...formData, maxResults: parseInt(e.target.value) })}
-                    className="salvage-input"
+                    className="w-full bg-slab-900 border-2 border-slab-700 text-slab-100 px-4 py-3 font-mono focus:border-acid-500 focus:outline-none transition-colors"
                     min={1}
                     max={10000}
                   />
@@ -258,7 +267,7 @@ function GatherForm() {
           {/* Submit */}
           <div className="flex items-center justify-end gap-4">
             <Link href="/resources" className="salvage-btn-secondary">
-              Cancel
+              ABORT
             </Link>
             <button
               type="submit"
@@ -268,9 +277,9 @@ function GatherForm() {
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <Play className="w-5 h-5" />
+                <Zap className="w-5 h-5" />
               )}
-              Start Gathering
+              EXECUTE
             </button>
           </div>
         </form>
@@ -282,8 +291,9 @@ function GatherForm() {
 export default function NewGatherPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-steel-950 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-salvage-400 animate-spin" />
+      <div className="min-h-screen bg-slab-950 flex flex-col items-center justify-center">
+        <Loader2 className="w-8 h-8 text-acid-400 animate-spin mb-4" />
+        <p className="font-mono text-acid-400 text-sm animate-pulse">INITIALIZING...</p>
       </div>
     }>
       <GatherForm />
