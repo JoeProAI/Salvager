@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --glow-salvage: 0 0 20px rgba(34, 197, 94, 0.4);
+    --glow-rust: 0 0 20px rgba(241, 145, 50, 0.4);
+  }
+
+  body {
+    @apply bg-steel-950 min-h-screen;
+    background-image: 
+      radial-gradient(ellipse at top, rgba(34, 197, 94, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(241, 145, 50, 0.03) 0%, transparent 50%);
+  }
+
+  ::selection {
+    @apply bg-salvage-500/30 text-salvage-100;
+  }
+}
+
+@layer components {
+  .salvage-card {
+    @apply bg-steel-900/50 backdrop-blur-sm border border-steel-800/50 rounded-lg;
+    @apply hover:border-salvage-500/30 transition-all duration-300;
+  }
+
+  .salvage-card-glow {
+    @apply salvage-card;
+    box-shadow: var(--glow-salvage);
+  }
+
+  .salvage-btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+    @apply bg-salvage-600 text-white hover:bg-salvage-500;
+    @apply focus:outline-none focus:ring-2 focus:ring-salvage-500 focus:ring-offset-2 focus:ring-offset-steel-950;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .salvage-btn-secondary {
+    @apply salvage-btn bg-steel-800 hover:bg-steel-700;
+    @apply focus:ring-steel-500;
+  }
+
+  .salvage-btn-rust {
+    @apply salvage-btn bg-rust-600 hover:bg-rust-500;
+    @apply focus:ring-rust-500;
+  }
+
+  .salvage-input {
+    @apply w-full px-4 py-3 rounded-lg bg-steel-900/80 border border-steel-700;
+    @apply text-steel-100 placeholder:text-steel-500;
+    @apply focus:outline-none focus:border-salvage-500 focus:ring-1 focus:ring-salvage-500;
+    @apply transition-all duration-200;
+  }
+
+  .salvage-label {
+    @apply block text-sm font-medium text-steel-300 mb-2;
+  }
+
+  .resource-tag {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply bg-salvage-500/10 text-salvage-400 border border-salvage-500/20;
+  }
+
+  .resource-tag-rust {
+    @apply resource-tag bg-rust-500/10 text-rust-400 border-rust-500/20;
+  }
+
+  .status-indicator {
+    @apply w-2 h-2 rounded-full;
+  }
+
+  .status-active {
+    @apply status-indicator bg-salvage-500 animate-pulse;
+  }
+
+  .status-pending {
+    @apply status-indicator bg-rust-500 animate-pulse-slow;
+  }
+
+  .status-complete {
+    @apply status-indicator bg-salvage-400;
+  }
+
+  .status-error {
+    @apply status-indicator bg-red-500;
+  }
+
+  .grid-pattern {
+    background-image: 
+      linear-gradient(rgba(104, 120, 145, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(104, 120, 145, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}
+
+@layer utilities {
+  .text-gradient-salvage {
+    @apply bg-gradient-to-r from-salvage-400 to-salvage-600 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-rust {
+    @apply bg-gradient-to-r from-rust-400 to-rust-600 bg-clip-text text-transparent;
+  }
+
+  .border-glow-salvage {
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.3), var(--glow-salvage);
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.steel.700') transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-steel-700 rounded-full;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-steel-600;
+  }
+}
