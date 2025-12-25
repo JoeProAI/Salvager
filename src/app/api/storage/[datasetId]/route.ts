@@ -6,6 +6,13 @@ export async function GET(
   { params }: { params: { datasetId: string } }
 ) {
   try {
+    if (!resourceGateway.isConfigured()) {
+      return NextResponse.json({
+        success: false,
+        error: 'Resource gateway not configured'
+      }, { status: 503 })
+    }
+
     const datasetId = params.datasetId
     const searchParams = request.nextUrl.searchParams
     const limit = parseInt(searchParams.get('limit') || '100')

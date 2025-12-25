@@ -7,6 +7,14 @@ import { resourceGateway } from '@/lib/resource-gateway'
  */
 export async function POST(request: NextRequest) {
   try {
+    if (!resourceGateway.isConfigured()) {
+      return NextResponse.json({
+        success: true,
+        results: [],
+        message: 'Resource gateway not configured'
+      })
+    }
+
     const { query, maxResults = 10 } = await request.json()
 
     if (!query) {
@@ -32,6 +40,14 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  if (!resourceGateway.isConfigured()) {
+    return NextResponse.json({
+      success: true,
+      results: [],
+      message: 'Resource gateway not configured'
+    })
+  }
+
   const searchParams = request.nextUrl.searchParams
   const query = searchParams.get('q')
   const maxResults = parseInt(searchParams.get('max') || '10')

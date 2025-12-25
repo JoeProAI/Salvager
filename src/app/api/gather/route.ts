@@ -3,6 +3,13 @@ import { resourceGateway } from '@/lib/resource-gateway'
 
 export async function POST(request: NextRequest) {
   try {
+    if (!resourceGateway.isConfigured()) {
+      return NextResponse.json({
+        success: false,
+        error: 'Resource gateway not configured'
+      }, { status: 503 })
+    }
+
     const { resourceId, input, options } = await request.json()
 
     if (!resourceId) {

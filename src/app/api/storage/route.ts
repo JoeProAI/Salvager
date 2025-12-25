@@ -3,6 +3,14 @@ import { resourceGateway } from '@/lib/resource-gateway'
 
 export async function GET(request: NextRequest) {
   try {
+    if (!resourceGateway.isConfigured()) {
+      return NextResponse.json({
+        success: true,
+        datasets: [],
+        message: 'Resource gateway not configured'
+      })
+    }
+
     const datasets = await resourceGateway.listStoredResources()
 
     return NextResponse.json({

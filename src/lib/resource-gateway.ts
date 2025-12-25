@@ -3,9 +3,6 @@
  * Connects to the data gathering infrastructure via MCP protocol
  */
 
-const GATEWAY_URL = process.env.RESOURCE_GATEWAY_URL || 'https://mcp.apify.com'
-const GATEWAY_TOKEN = process.env.RESOURCE_GATEWAY_TOKEN
-
 export interface ResourceQuery {
   source?: string
   query?: string
@@ -33,21 +30,25 @@ export interface ResourceType {
 }
 
 class ResourceGatewayClient {
-  private baseUrl: string
-  private token: string
+  private getBaseUrl(): string {
+    return process.env.RESOURCE_GATEWAY_URL || 'https://mcp.apify.com'
+  }
 
-  constructor() {
-    this.baseUrl = GATEWAY_URL
-    this.token = GATEWAY_TOKEN || ''
+  private getToken(): string {
+    return process.env.RESOURCE_GATEWAY_TOKEN || ''
+  }
+
+  isConfigured(): boolean {
+    return !!process.env.RESOURCE_GATEWAY_TOKEN
   }
 
   private async request(endpoint: string, options: RequestInit = {}) {
-    const url = `${this.baseUrl}${endpoint}`
+    const url = `${this.getBaseUrl()}${endpoint}`
     
     const response = await fetch(url, {
       ...options,
       headers: {
-        'Authorization': `Bearer ${this.token}`,
+        'Authorization': `Bearer ${this.getToken()}`,
         'Content-Type': 'application/json',
         ...options.headers,
       },

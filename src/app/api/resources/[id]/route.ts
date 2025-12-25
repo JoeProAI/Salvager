@@ -6,6 +6,13 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    if (!resourceGateway.isConfigured()) {
+      return NextResponse.json({
+        success: false,
+        error: 'Resource gateway not configured'
+      }, { status: 503 })
+    }
+
     const resourceId = params.id
 
     if (!resourceId) {
