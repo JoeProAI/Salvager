@@ -2,121 +2,261 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500;600&family=Bebas+Neue&display=swap');
+
 @layer base {
   :root {
-    --glow-salvage: 0 0 20px rgba(34, 197, 94, 0.4);
-    --glow-rust: 0 0 20px rgba(241, 145, 50, 0.4);
+    --font-display: 'Archivo Black', sans-serif;
+    --font-body: 'IBM Plex Mono', monospace;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --glow-acid: 0 0 30px rgba(0, 255, 90, 0.4), 0 0 60px rgba(0, 255, 90, 0.2);
+    --glow-oxide: 0 0 20px rgba(255, 119, 17, 0.5);
+    --noise-opacity: 0.03;
+  }
+
+  * {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%2300ff5a' d='M5 3l14 9-14 9V3z'/%3E%3C/svg%3E") 4 4, auto;
   }
 
   body {
-    @apply bg-steel-950 min-h-screen;
+    @apply bg-slab-950 min-h-screen text-slab-200 font-body antialiased;
     background-image: 
-      radial-gradient(ellipse at top, rgba(34, 197, 94, 0.05) 0%, transparent 50%),
-      radial-gradient(ellipse at bottom right, rgba(241, 145, 50, 0.03) 0%, transparent 50%);
+      linear-gradient(180deg, rgba(0,255,90,0.02) 0%, transparent 30%),
+      linear-gradient(rgba(0,255,90,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,90,0.015) 1px, transparent 1px);
+    background-size: 100% 100%, 60px 60px, 60px 60px;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: var(--noise-opacity);
+    pointer-events: none;
+    z-index: 9999;
   }
 
   ::selection {
-    @apply bg-salvage-500/30 text-salvage-100;
+    @apply bg-acid-500/40 text-slab-950;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply tracking-tight;
   }
 }
 
 @layer components {
+  /* BRUTALIST CARD - raw edges, harsh borders */
   .salvage-card {
-    @apply bg-steel-900/50 backdrop-blur-sm border border-steel-800/50 rounded-lg;
-    @apply hover:border-salvage-500/30 transition-all duration-300;
+    @apply bg-slab-900/80 border-2 border-slab-700;
+    @apply relative overflow-hidden;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+
+  .salvage-card::before {
+    content: '';
+    @apply absolute top-0 right-0 w-4 h-4;
+    background: linear-gradient(135deg, transparent 50%, rgba(0,255,90,0.3) 50%);
+  }
+
+  .salvage-card:hover {
+    @apply border-acid-500/50;
+    box-shadow: var(--glow-acid);
   }
 
   .salvage-card-glow {
-    @apply salvage-card;
-    box-shadow: var(--glow-salvage);
+    @apply salvage-card border-acid-500/30;
+    box-shadow: var(--glow-acid);
   }
 
+  /* INDUSTRIAL BUTTONS - chunky, utilitarian */
   .salvage-btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
-    @apply bg-salvage-600 text-white hover:bg-salvage-500;
-    @apply focus:outline-none focus:ring-2 focus:ring-salvage-500 focus:ring-offset-2 focus:ring-offset-steel-950;
-    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply relative px-6 py-3 font-display text-sm uppercase tracking-widest;
+    @apply bg-acid-500 text-slab-950 border-0;
+    @apply transition-all duration-150;
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  }
+
+  .salvage-btn:hover {
+    @apply bg-acid-400;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 rgba(0,255,90,0.5);
+  }
+
+  .salvage-btn:active {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
+
+  .salvage-btn:disabled {
+    @apply opacity-40 cursor-not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 
   .salvage-btn-secondary {
-    @apply salvage-btn bg-steel-800 hover:bg-steel-700;
-    @apply focus:ring-steel-500;
+    @apply salvage-btn bg-slab-700 text-slab-100;
   }
 
-  .salvage-btn-rust {
-    @apply salvage-btn bg-rust-600 hover:bg-rust-500;
-    @apply focus:ring-rust-500;
+  .salvage-btn-secondary:hover {
+    @apply bg-slab-600;
+    box-shadow: 4px 4px 0 rgba(255,255,255,0.1);
   }
 
+  .salvage-btn-danger {
+    @apply salvage-btn bg-oxide-600 text-white;
+  }
+
+  .salvage-btn-danger:hover {
+    @apply bg-oxide-500;
+    box-shadow: 4px 4px 0 rgba(255,119,17,0.5);
+  }
+
+  /* RAW INPUT FIELDS */
   .salvage-input {
-    @apply w-full px-4 py-3 rounded-lg bg-steel-900/80 border border-steel-700;
-    @apply text-steel-100 placeholder:text-steel-500;
-    @apply focus:outline-none focus:border-salvage-500 focus:ring-1 focus:ring-salvage-500;
-    @apply transition-all duration-200;
+    @apply w-full px-4 py-3 bg-slab-950 border-2 border-slab-600;
+    @apply text-acid-400 placeholder:text-slab-500 font-mono;
+    @apply focus:outline-none focus:border-acid-500;
+    @apply transition-colors duration-150;
+  }
+
+  .salvage-input:focus {
+    box-shadow: inset 0 0 20px rgba(0,255,90,0.1);
   }
 
   .salvage-label {
-    @apply block text-sm font-medium text-steel-300 mb-2;
+    @apply block text-xs font-display uppercase tracking-[0.2em] text-slab-400 mb-2;
   }
 
+  /* HAZARD TAGS */
   .resource-tag {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-    @apply bg-salvage-500/10 text-salvage-400 border border-salvage-500/20;
+    @apply inline-flex items-center px-3 py-1 text-xs font-mono uppercase tracking-wider;
+    @apply bg-acid-500/10 text-acid-400 border border-acid-500/30;
+    clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
   }
 
-  .resource-tag-rust {
-    @apply resource-tag bg-rust-500/10 text-rust-400 border-rust-500/20;
+  .resource-tag-oxide {
+    @apply resource-tag bg-oxide-500/10 text-oxide-400 border-oxide-500/30;
   }
 
+  .resource-tag-hazard {
+    @apply resource-tag bg-hazard-500/20 text-hazard-400 border-hazard-500/40;
+    animation: flicker 2s infinite;
+  }
+
+  /* STATUS LIGHTS */
   .status-indicator {
-    @apply w-2 h-2 rounded-full;
+    @apply w-2.5 h-2.5 relative;
+  }
+
+  .status-indicator::before {
+    content: '';
+    @apply absolute inset-0 rounded-full;
   }
 
   .status-active {
-    @apply status-indicator bg-salvage-500 animate-pulse;
+    @apply status-indicator;
+  }
+
+  .status-active::before {
+    @apply bg-acid-500 animate-pulse;
+    box-shadow: 0 0 10px rgba(0,255,90,0.8);
   }
 
   .status-pending {
-    @apply status-indicator bg-rust-500 animate-pulse-slow;
+    @apply status-indicator;
   }
 
-  .status-complete {
-    @apply status-indicator bg-salvage-400;
+  .status-pending::before {
+    @apply bg-oxide-500 animate-pulse-slow;
+    box-shadow: 0 0 10px rgba(255,119,17,0.6);
   }
 
-  .status-error {
-    @apply status-indicator bg-red-500;
+  .status-complete::before {
+    @apply bg-acid-400;
   }
 
-  .grid-pattern {
-    background-image: 
-      linear-gradient(rgba(104, 120, 145, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(104, 120, 145, 0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
+  .status-error::before {
+    @apply bg-red-500;
+    box-shadow: 0 0 10px rgba(239,68,68,0.6);
+  }
+
+  /* SCAN LINE EFFECT */
+  .scan-line {
+    @apply pointer-events-none fixed inset-0 z-50 overflow-hidden;
+  }
+
+  .scan-line::before {
+    content: '';
+    @apply absolute left-0 right-0 h-px bg-acid-500/20;
+    animation: scan 8s linear infinite;
+  }
+
+  /* DIAGONAL HAZARD STRIPES */
+  .hazard-stripe {
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 10px,
+      rgba(234, 179, 8, 0.1) 10px,
+      rgba(234, 179, 8, 0.1) 20px
+    );
+  }
+
+  /* TERMINAL STYLE TEXT */
+  .terminal-text {
+    @apply font-mono text-acid-400;
+    text-shadow: 0 0 10px rgba(0,255,90,0.5);
+  }
+
+  .terminal-text::before {
+    content: '> ';
+    @apply text-acid-600;
   }
 }
 
 @layer utilities {
-  .text-gradient-salvage {
-    @apply bg-gradient-to-r from-salvage-400 to-salvage-600 bg-clip-text text-transparent;
+  .text-gradient-acid {
+    @apply bg-gradient-to-r from-acid-400 via-acid-300 to-acid-500 bg-clip-text text-transparent;
   }
 
-  .text-gradient-rust {
-    @apply bg-gradient-to-r from-rust-400 to-rust-600 bg-clip-text text-transparent;
+  .text-gradient-oxide {
+    @apply bg-gradient-to-r from-oxide-400 to-oxide-600 bg-clip-text text-transparent;
   }
 
-  .border-glow-salvage {
-    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.3), var(--glow-salvage);
+  .border-glow-acid {
+    box-shadow: 0 0 0 1px rgba(0, 255, 90, 0.4), var(--glow-acid);
   }
+
+  .neon-text {
+    text-shadow: 
+      0 0 5px rgba(0,255,90,0.8),
+      0 0 10px rgba(0,255,90,0.6),
+      0 0 20px rgba(0,255,90,0.4),
+      0 0 40px rgba(0,255,90,0.2);
+  }
+
+  .glitch-hover:hover {
+    animation: glitch 0.3s infinite;
+  }
+
+  /* STAGGER ANIMATIONS */
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+  .stagger-5 { animation-delay: 0.5s; }
 
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: theme('colors.steel.700') transparent;
+    scrollbar-color: #00ff5a20 transparent;
   }
 
   .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-track {
@@ -124,10 +264,10 @@
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-steel-700 rounded-full;
+    @apply bg-acid-500/30;
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    @apply bg-steel-600;
+    @apply bg-acid-500/50;
   }
 }
