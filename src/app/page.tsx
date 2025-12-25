@@ -28,34 +28,34 @@ export default function Home() {
     return () => clearInterval(interval)
   }, [])
 
-  const features = [
+  const agents = [
     {
-      id: 'discover',
+      id: 'phantom',
       icon: Crosshair,
-      title: 'LOCATE RESOURCES',
-      description: 'Scan and catalog data deposits across platforms. Social feeds. Commerce hubs. Map coordinates. Nothing escapes detection.',
-      tag: 'SCAN',
+      title: 'PHANTOM',
+      description: 'Slips in undetected. Finds what others miss. First in, maps the terrain. Your recon specialist.',
+      tag: 'RECON',
     },
     {
-      id: 'gather',
+      id: 'byte',
       icon: Container,
-      title: 'EXTRACT DATA',
-      description: 'Pull structured payloads from any web source. Intelligent parsing. Automatic validation. Zero waste.',
-      tag: 'EXTRACT',
+      title: 'BYTE',
+      description: 'Breaks everything into pieces. Parses the unparseable. Data is just bytes waiting to be understood.',
+      tag: 'PROCESS',
     },
     {
-      id: 'pipeline',
-      icon: Layers,
-      title: 'AUTOMATE FLOWS',
-      description: 'Build pipelines that run on schedule. Gather. Transform. Deliver. Repeat. No human intervention required.',
-      tag: 'AUTOMATE',
+      id: 'glitch',
+      icon: Triangle,
+      title: 'GLITCH',
+      description: 'Spots what\'s broken. Loves edge cases. If there\'s a flaw in your data or logic, Glitch will find it.',
+      tag: 'VALIDATE',
     },
     {
-      id: 'monitor',
+      id: 'daemon',
       icon: Radio,
-      title: 'TRACK OPERATIONS',
-      description: 'Real-time status feeds. Live logs. Performance metrics. Know exactly what your salvage operations are doing.',
-      tag: 'MONITOR',
+      title: 'DAEMON',
+      description: 'Runs in the background. Synthesizes everything. When the crew finishes, Daemon delivers the payload.',
+      tag: 'SYNTHESIZE',
     },
   ]
 
@@ -81,8 +81,8 @@ export default function Home() {
                 <div className="absolute inset-0 bg-acid-500/10 group-hover:bg-acid-500/20 transition-colors" />
               </div>
               <div>
-                <span className="font-display text-2xl text-acid-500 tracking-wider block leading-none">SALVAGER</span>
-                <span className="text-[10px] text-slab-500 tracking-[0.3em] uppercase">Resource Extraction</span>
+                <span className="font-display text-2xl text-acid-500 tracking-wider block leading-none">SALVAGE OPS</span>
+                <span className="text-[10px] text-slab-500 tracking-[0.3em] uppercase">Agent Crews</span>
               </div>
             </Link>
             <div className="flex items-center gap-8">
@@ -171,23 +171,23 @@ export default function Home() {
           <div className="flex items-center gap-4 mb-16">
             <Triangle className="w-6 h-6 text-oxide-500" />
             <h2 className="font-display text-4xl text-slab-100 uppercase tracking-wide">
-              Capabilities
+              The Crew
             </h2>
             <div className="flex-1 h-px bg-gradient-to-r from-slab-700 to-transparent" />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {features.map((feature, index) => {
-              const Icon = feature.icon
-              const isActive = isHovered === feature.id
+            {agents.map((agent, index) => {
+              const Icon = agent.icon
+              const isActive = isHovered === agent.id
               
               return (
                 <div
-                  key={feature.id}
+                  key={agent.id}
                   className={`salvage-card p-8 transition-all duration-200 ${
                     isActive ? 'border-acid-500/50' : ''
                   }`}
-                  onMouseEnter={() => setIsHovered(feature.id)}
+                  onMouseEnter={() => setIsHovered(agent.id)}
                   onMouseLeave={() => setIsHovered(null)}
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
@@ -196,14 +196,14 @@ export default function Home() {
                       <Icon className={`w-7 h-7 transition-colors ${isActive ? 'text-acid-400' : 'text-slab-400'}`} />
                     </div>
                     <span className={`resource-tag ${isActive ? '' : 'opacity-50'}`}>
-                      {feature.tag}
+                      {agent.tag}
                     </span>
                   </div>
                   <h3 className="font-display text-xl text-slab-100 mb-3 tracking-wide">
-                    {feature.title}
+                    {agent.title}
                   </h3>
                   <p className="text-slab-400 font-mono text-sm leading-relaxed">
-                    {feature.description}
+                    {agent.description}
                   </p>
                 </div>
               )
@@ -306,7 +306,7 @@ export default function Home() {
               <div className="w-10 h-10 border-2 border-acid-500/50 flex items-center justify-center">
                 <Skull className="w-5 h-5 text-acid-500" />
               </div>
-              <span className="font-display text-lg text-acid-500 tracking-wider">SALVAGER</span>
+              <span className="font-display text-lg text-acid-500 tracking-wider">SALVAGE OPS</span>
             </div>
             <div className="flex items-center gap-8 text-xs text-slab-500 font-mono uppercase tracking-wider">
               <Link href="/docs" className="hover:text-acid-400 transition-colors">Docs</Link>
@@ -315,7 +315,7 @@ export default function Home() {
               <Link href="/privacy" className="hover:text-acid-400 transition-colors">Privacy</Link>
             </div>
             <div className="text-xs text-slab-600 font-mono">
-              © 2024 SALVAGER SYSTEMS
+              © 2024 SALVAGE OPS
             </div>
           </div>
         </div>
