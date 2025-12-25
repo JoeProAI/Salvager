@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const adminAuth = getAdminAuth()
+    const adminAuth = await getAdminAuth()
     if (!adminAuth) {
       return NextResponse.json(
         { authenticated: false, error: 'Auth not configured' },

@@ -1,13 +1,9 @@
-import { initializeApp, getApps, cert, App } from 'firebase-admin/app'
-import { getAuth, Auth } from 'firebase-admin/auth'
-import { getFirestore, Firestore } from 'firebase-admin/firestore'
+let adminApp: any = null
+let adminAuth: any = null
+let adminDb: any = null
 
-let app: App | null = null
-let adminAuth: Auth | null = null
-let adminDb: Firestore | null = null
-
-function getAdminApp() {
-  if (app) return app
+async function getAdminApp() {
+  if (adminApp) return adminApp
   
   const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID
   const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL
@@ -18,34 +14,38 @@ function getAdminApp() {
     return null
   }
 
+  const { initializeApp, getApps, cert } = await import('firebase-admin/app')
+
   const serviceAccount = {
     projectId,
     clientEmail,
     privateKey: privateKey.replace(/\\n/g, '\n'),
   }
 
-  app = getApps().length === 0 
+  adminApp = getApps().length === 0 
     ? initializeApp({ credential: cert(serviceAccount as any) })
     : getApps()[0]
   
-  return app
+  return adminApp
 }
 
-export function getAdminAuth() {
+export async function getAdminAuth() {
   if (adminAuth) return adminAuth
-  const adminApp = getAdminApp()
-  if (!adminApp) return null
-  adminAuth = getAuth(adminApp)
+  const app = await getAdminApp()
+  if (!app) return null
+  const { getAuth } = await import('firebase-admin/auth')
+  adminAuth = getAuth(app)
   return adminAuth
 }
 
-export function getAdminDb() {
+export async function getAdminDb() {
   if (adminDb) return adminDb
-  const adminApp = getAdminApp()
-  if (!adminApp) return null
-  adminDb = getFirestore(adminApp)
+  const app = await getAdminApp()
+  if (!app) return null
+  const { getFirestore } = await import('firebase-admin/firestore')
+  adminDb = getFirestore(app)
   return adminDb
 }
 
-export { app, adminAuth, adminDb }
+export { adminApp, adminAuth, adminDb }
 export default getAdminApp

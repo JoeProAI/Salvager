@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const adminAuth = getAdminAuth()
+    const adminAuth = await getAdminAuth()
     if (!adminAuth) {
       return NextResponse.json(
         { error: 'Authentication service not configured' },
