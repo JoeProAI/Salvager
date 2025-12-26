@@ -1,6 +1,7 @@
 /**
  * Resource Gateway Client
- * Connects to the data gathering infrastructure via MCP protocol
+ * Connects to Apify REST API v2 for data extraction
+ * https://docs.apify.com/api/v2
  */
 
 export interface ResourceQuery {
@@ -19,6 +20,7 @@ export interface GatheringTask {
   error?: string
   createdAt: string
   completedAt?: string
+  datasetId?: string
 }
 
 export interface ResourceType {
@@ -31,7 +33,7 @@ export interface ResourceType {
 
 class ResourceGatewayClient {
   private getBaseUrl(): string {
-    return process.env.RESOURCE_GATEWAY_URL || 'https://mcp.apify.com'
+    return 'https://api.apify.com/v2'
   }
 
   private getToken(): string {
@@ -42,13 +44,19 @@ class ResourceGatewayClient {
     return !!process.env.RESOURCE_GATEWAY_TOKEN
   }
 
-  private async request(endpoint: string, options: RequestInit = {}) {
+  /**
+   * Make authenticated request to Apify API
+   */
+  private async request(endpoint: string, options: RequestInit = {}): Promise<any> {
     const url = `${this.getBaseUrl()}${endpoint}`
+    const token = this.getToken()
     
+    console.log(`[Apify] ${options.method || 'GET'} ${endpoint}`)
+
     const response = await fetch(url, {
       ...options,
       headers: {
-        'Authorization': `Bearer ${this.getToken()}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -56,126 +64,151 @@ class ResourceGatewayClient {
 
     if (!response.ok) {
       const error = await response.text()
-      throw new Error(`Gateway request failed: ${response.status} - ${error}`)
+      console.error(`[Apify] Error:`, error)
+      throw new Error(`Apify API error: ${response.status} - ${error}`)
     }
 
     return response.json()
   }
 
   /**
-   * Search for available resource types
+   * Search for Actors in the Apify Store
    */
   async discoverResources(query: string, limit = 20): Promise<ResourceType[]> {
-    return this.request('/tools/search-actors', {
-      method: 'POST',
-      body: JSON.stringify({ query, limit }),
-    })
+    const result = await this.request(`/store?search=${encodeURIComponent(query)}&limit=${limit}`)
+    
+    if (result.data?.items) {
+      return result.data.items.map((actor: any) => ({
+        id: actor.username + '/' + actor.name,
+        name: actor.title || actor.name,
+        description: actor.description || '',
+        category: actor.categories?.[0] || 'general',
+      }))
+    }
+    
+    return []
   }
 
   /**
-   * Get details about a specific resource type
+   * Get Actor details including input schema
    */
-  async getResourceDetails(resourceId: string): Promise<ResourceType> {
-    return this.request('/tools/fetch-actor-details', {
-      method: 'POST',
-      body: JSON.stringify({ actorId: resourceId }),
-    })
-  }
-
-  /**
-   * Start a resource gathering task
-   */
-  async startGathering(resourceId: string, input: Record<string, any>): Promise<GatheringTask> {
-    const result = await this.request('/tools/call-actor', {
-      method: 'POST',
-      body: JSON.stringify({
-        actorId: resourceId,
-        input,
-      }),
-    })
+  async getResourceDetails(actorId: string): Promise<ResourceType> {
+    const result = await this.request(`/acts/${encodeURIComponent(actorId)}`)
+    
+    // Also get the input schema
+    let inputSchema = null
+    try {
+      const schemaResult = await this.request(`/acts/${encodeURIComponent(actorId)}/input-schema`)
+      inputSchema = schemaResult
+    } catch (e) {
+      // Some actors don't have input schema
+    }
 
     return {
-      id: result.runId || result.id,
-      status: 'running',
-      createdAt: new Date().toISOString(),
-      ...result,
+      id: actorId,
+      name: result.data?.title || result.data?.name || actorId,
+      description: result.data?.description || '',
+      category: result.data?.categories?.[0] || 'general',
+      inputSchema: inputSchema || result.data?.defaultRunOptions,
     }
   }
 
   /**
-   * Get the status of a gathering task
+   * Run an Actor with given input
    */
-  async getTaskStatus(taskId: string): Promise<GatheringTask> {
-    return this.request('/tools/get-actor-run', {
+  async startGathering(actorId: string, input: Record<string, any>): Promise<GatheringTask> {
+    const result = await this.request(`/acts/${encodeURIComponent(actorId)}/runs`, {
       method: 'POST',
-      body: JSON.stringify({ runId: taskId }),
+      body: JSON.stringify(input),
     })
+
+    const run = result.data
+    return {
+      id: run.id,
+      status: this.mapStatus(run.status),
+      createdAt: run.startedAt || new Date().toISOString(),
+      datasetId: run.defaultDatasetId,
+    }
   }
 
   /**
-   * Get the output of a completed gathering task
+   * Get Actor run status
+   */
+  async getTaskStatus(runId: string): Promise<GatheringTask> {
+    const result = await this.request(`/actor-runs/${runId}`)
+    const run = result.data
+    
+    return {
+      id: run.id,
+      status: this.mapStatus(run.status),
+      createdAt: run.startedAt || '',
+      completedAt: run.finishedAt,
+      datasetId: run.defaultDatasetId,
+    }
+  }
+
+  /**
+   * Map Apify status to our status
+   */
+  private mapStatus(status: string): 'pending' | 'running' | 'completed' | 'failed' {
+    switch (status) {
+      case 'SUCCEEDED': return 'completed'
+      case 'FAILED': case 'ABORTED': case 'TIMED-OUT': return 'failed'
+      case 'RUNNING': return 'running'
+      default: return 'pending'
+    }
+  }
+
+  /**
+   * Get dataset items (Actor output)
    */
   async getTaskOutput(datasetId: string, options?: { limit?: number; offset?: number }): Promise<any[]> {
-    return this.request('/tools/get-dataset-items', {
-      method: 'POST',
-      body: JSON.stringify({
-        datasetId,
-        limit: options?.limit || 100,
-        offset: options?.offset || 0,
-      }),
-    })
+    const limit = options?.limit || 100
+    const offset = options?.offset || 0
+    const result = await this.request(`/datasets/${datasetId}/items?limit=${limit}&offset=${offset}`)
+    return Array.isArray(result) ? result : []
   }
 
   /**
-   * Get logs for a gathering task
+   * Get Actor run logs
    */
-  async getTaskLogs(taskId: string): Promise<string> {
-    return this.request('/tools/get-actor-log', {
-      method: 'POST',
-      body: JSON.stringify({ runId: taskId }),
+  async getTaskLogs(runId: string): Promise<string> {
+    const response = await fetch(`${this.getBaseUrl()}/actor-runs/${runId}/log`, {
+      headers: { 'Authorization': `Bearer ${this.getToken()}` },
     })
+    return response.text()
   }
 
   /**
-   * List all datasets (stored resources)
+   * List user's datasets
    */
   async listStoredResources(): Promise<any[]> {
-    return this.request('/tools/get-dataset-list', {
-      method: 'POST',
-      body: JSON.stringify({}),
-    })
+    const result = await this.request('/datasets')
+    return result.data?.items || []
   }
 
   /**
-   * Get stored resource metadata
+   * Get dataset metadata
    */
   async getStoredResource(datasetId: string): Promise<any> {
-    return this.request('/tools/get-dataset', {
-      method: 'POST',
-      body: JSON.stringify({ datasetId }),
-    })
+    const result = await this.request(`/datasets/${datasetId}`)
+    return result.data
   }
 
   /**
-   * Browse the web and gather content (RAG-enabled)
+   * Get dataset items
+   */
+  async getDatasetItems(datasetId: string, options?: { limit?: number; offset?: number }): Promise<any[]> {
+    return this.getTaskOutput(datasetId, options)
+  }
+
+  /**
+   * Run RAG Web Browser Actor
    */
   async browseAndGather(query: string, maxResults = 10): Promise<any> {
-    return this.request('/tools/apify-slash-rag-web-browser', {
-      method: 'POST',
-      body: JSON.stringify({
-        query,
-        maxResults,
-      }),
-    })
-  }
-
-  /**
-   * Search documentation for integration help
-   */
-  async searchDocs(query: string): Promise<any[]> {
-    return this.request('/tools/search-apify-docs', {
-      method: 'POST',
-      body: JSON.stringify({ query }),
+    return this.startGathering('apify/rag-web-browser', {
+      query,
+      maxResults,
     })
   }
 
@@ -183,20 +216,16 @@ class ResourceGatewayClient {
    * List key-value stores
    */
   async listKeyValueStores(): Promise<any[]> {
-    return this.request('/tools/get-key-value-store-list', {
-      method: 'POST',
-      body: JSON.stringify({}),
-    })
+    const result = await this.request('/key-value-stores')
+    return result.data?.items || []
   }
 
   /**
    * Get value from key-value store
    */
   async getStoredValue(storeId: string, key: string): Promise<any> {
-    return this.request('/tools/get-key-value-store-record', {
-      method: 'POST',
-      body: JSON.stringify({ storeId, key }),
-    })
+    const result = await this.request(`/key-value-stores/${storeId}/records/${key}`)
+    return result
   }
 }
 
