@@ -1,7 +1,7 @@
 /**
- * SALVAGE OPS - Agent System
- * Export all agent-related modules
+ * Agent Module Exports
  */
 
 export * from './types'
 export * from './orchestrator'
+export * from './mcp-executor'
