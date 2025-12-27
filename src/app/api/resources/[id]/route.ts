@@ -24,6 +24,14 @@ export async function GET(
 
     console.log(`[MCP] Fetching actor details: ${resourceId}`)
     const resource = await resourceGateway.getResourceDetails(resourceId)
+    
+    if (!resource) {
+      return NextResponse.json(
+        { error: 'Resource not found' },
+        { status: 404 }
+      )
+    }
+    
     console.log(`[MCP] Got details for: ${resource.name}`)
 
     return NextResponse.json({

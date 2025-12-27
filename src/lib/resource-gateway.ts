@@ -122,7 +122,7 @@ class ResourceGatewayClient {
   /**
    * Get Actor output via MCP
    */
-  async getTaskOutput(datasetId: string, options?: { limit?: number }): Promise<any[]> {
+  async getTaskOutput(datasetId: string, options?: { limit?: number; offset?: number }): Promise<any[]> {
     return apifyMCP.getActorOutput(datasetId, options?.limit || 100)
   }
 
@@ -138,6 +138,45 @@ class ResourceGatewayClient {
    */
   async callTool(toolName: string, args: Record<string, any> = {}): Promise<any> {
     return apifyMCP.callTool(toolName, args)
+  }
+
+  /**
+   * Browse and gather using RAG web browser
+   */
+  async browseAndGather(query: string, maxResults = 10): Promise<any> {
+    const result = await apifyMCP.callTool('apify-slash-rag-web-browser', { query, maxResults })
+    return result.success ? result.data : []
+  }
+
+  /**
+   * Get task logs
+   */
+  async getTaskLogs(runId: string): Promise<string> {
+    const result = await apifyMCP.callTool('get-actor-log', { runId })
+    return result.success ? (typeof result.data === 'string' ? result.data : JSON.stringify(result.data)) : ''
+  }
+
+  /**
+   * List stored resources (datasets)
+   */
+  async listStoredResources(): Promise<any[]> {
+    const result = await apifyMCP.callTool('get-dataset-list', {})
+    return result.success && Array.isArray(result.data) ? result.data : []
+  }
+
+  /**
+   * Get stored resource metadata
+   */
+  async getStoredResource(datasetId: string): Promise<any> {
+    const result = await apifyMCP.callTool('get-dataset', { datasetId })
+    return result.success ? result.data : null
+  }
+
+  /**
+   * Get dataset items
+   */
+  async getDatasetItems(datasetId: string, options?: { limit?: number; offset?: number }): Promise<any[]> {
+    return this.getTaskOutput(datasetId, options)
   }
 }
 
