@@ -3,7 +3,7 @@
  * Connects agents to real MCP tool calls for data extraction
  */
 
-import { mcpManager } from '../mcp'
+import { apifyMCP } from '../mcp'
 import { AgentRole, AGENT_DEFINITIONS } from './types'
 
 export interface MCPToolCall {
@@ -38,8 +38,7 @@ class MCPAgentExecutor {
    */
   async getAvailableTools(): Promise<any[]> {
     try {
-      const client = await mcpManager.getSession()
-      return client.getTools()
+      return apifyMCP.listTools()
     } catch (error) {
       console.error('[MCPExecutor] Failed to get tools:', error)
       return []
@@ -71,19 +70,17 @@ class MCPAgentExecutor {
     console.log(`[${agentDef.name}] Starting task: ${objective}`)
 
     try {
-      const client = await mcpManager.getSession()
-
       for (const toolCall of toolCalls) {
         console.log(`[${agentDef.name}] Calling MCP tool: ${toolCall.name}`)
         const startTime = Date.now()
 
         try {
-          const result = await client.callTool(toolCall.name, toolCall.arguments)
+          const result = await apifyMCP.callTool(toolCall.name, toolCall.arguments)
           
           task.results.push({
             tool: toolCall.name,
-            success: true,
-            data: result,
+            success: result.success,
+            data: result.data,
             executionTime: Date.now() - startTime,
           })
 
